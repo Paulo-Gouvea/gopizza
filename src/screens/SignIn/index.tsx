@@ -1,4 +1,6 @@
-import React from "react";
+import React, {
+    useState
+} from "react";
 import { 
     KeyboardAvoidingView,
     Platform, 
@@ -13,12 +15,23 @@ import {
     ForgotPasswordLabel,
 } from './styles';
 
+import { useAuth } from "../../hooks/auth";
+
 import brandImg from '../../assets/brand.png';
 
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 
 export function SignIn() {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+
+    const { signIn, isLogging } = useAuth();
+
+    function handleSignIn(){
+        signIn(email, password);
+    }
+
     return (
         <Container>
             <KeyboardAvoidingView
@@ -37,12 +50,14 @@ export function SignIn() {
                         type="secondary"
                         autoCorrect={false}
                         autoCapitalize="none"
+                        onChangeText={setEmail}
                     />
 
                     <Input
                         placeholder="Senha"
                         type="secondary"
                         secureTextEntry
+                        onChangeText={setPassword}
                     />
 
                     <ForgotPasswordButton>
@@ -54,7 +69,8 @@ export function SignIn() {
                     <Button
                         title="Entrar"
                         type="secondary"
-                        onPress={() => console.log("HELLO")}
+                        onPress={handleSignIn}
+                        isLoading={isLogging}
                     />
                 </Content>
             </KeyboardAvoidingView>
