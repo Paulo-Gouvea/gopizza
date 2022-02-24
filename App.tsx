@@ -12,6 +12,7 @@ import { AuthProvider } from "./src/hooks/auth";
 
 import { SignIn } from "./src/screens/SignIn";
 import { Product } from "./src/screens/Product";
+import { Home } from "./src/screens/Home";
 
 export default function App(){
   const [fontsLoaded] = useFonts({
@@ -31,7 +32,7 @@ export default function App(){
         translucent
       />
       <AuthProvider>
-        <Product />
+        <Home />
       </AuthProvider>
     </ThemeProvider>
   );
