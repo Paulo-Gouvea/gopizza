@@ -12,6 +12,7 @@ import { AuthProvider } from "./src/hooks/auth";
 
 import { Routes } from "./src/routes";
 import { Order } from "./src/screens/Order";
+import { Orders } from "./src/screens/Orders";
 
 export default function App(){
   const [fontsLoaded] = useFonts({
@@ -31,7 +32,7 @@ export default function App(){
         translucent
       />
       <AuthProvider>
-        <Order />
+        <Orders />
       </AuthProvider>
     </ThemeProvider>
   );
