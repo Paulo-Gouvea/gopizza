@@ -1,6 +1,6 @@
 import React, {
-    useEffect,
     useState, 
+    useCallback,
 } from "react";
 import { Alert, TouchableOpacity, FlatList } from "react-native";
 import { MaterialIcons } from '@expo/vector-icons';
@@ -16,10 +16,12 @@ import {
     GreetingText,
     Title,
     MenuHeader,
-    MenuItemsNumber
+    MenuItemsNumber,
+    NewProductButton,
 } from "./styles";
 
 import { useTheme } from "styled-components/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 
 import { Search } from "../../components/Search";
 import { ProductCard, ProductProps } from "../../components/ProductCard";
@@ -27,7 +29,9 @@ import { ProductCard, ProductProps } from "../../components/ProductCard";
 export function Home(){
     const [pizzas, setPizzas] = useState<ProductProps[]>([]);
     const [search, setSearch] = useState('');
+
     const { COLORS } = useTheme();
+    const { navigate } = useNavigation();
 
     function fetchPizzas(value: string){
         const formattedValue = value.toLocaleLowerCase().trim();
@@ -63,9 +67,19 @@ export function Home(){
         fetchPizzas('');
     }
 
-    useEffect(()=> {
-        fetchPizzas('');
-    }, []);
+    function handleOpen(id: string){
+        navigate('product', { id });
+    }
+
+    function handleAdd(){
+        navigate('product', {});
+    }
+
+    useFocusEffect(
+        useCallback(()=> {
+            fetchPizzas('');
+        }, [])
+    );
 
     return(
         <Container>
@@ -96,7 +110,7 @@ export function Home(){
 
             <MenuHeader>
                 <Title>Cardápio</Title>
-                <MenuItemsNumber>10 pizzas</MenuItemsNumber>
+                <MenuItemsNumber>{pizzas.length} pizzas</MenuItemsNumber>
             </MenuHeader>
 
             <FlatList 
@@ -111,11 +125,16 @@ export function Home(){
                 renderItem={({ item }) => (
                     <ProductCard 
                         data={item}
+                        onPress={() => handleOpen(item.id)}
                     />
                 )}
             />
 
-
+            <NewProductButton 
+                title="Cadastrar Pizza"
+                type="secondary"
+                onPress={handleAdd}
+            />
         </Container>
     );
 }
