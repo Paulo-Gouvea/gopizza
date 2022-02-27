@@ -11,12 +11,23 @@ import {
     StatusTypesProps
 } from './styles';
 
+export type OrderProps = {
+    id: string;
+    pizza: string;
+    image: string;
+    status: StatusTypesProps;
+    table_number: string;
+    quantity: string;
+}
+
 type Props = TouchableOpacityProps & {
     index: number;
+    data: OrderProps;
 }
 
 export function OrderCard({
     index,
+    data,
     ...rest
 }: Props){
     return(
@@ -24,21 +35,21 @@ export function OrderCard({
             index={index}
             {...rest}
         >
-            <Image source={{ uri: 'https://github.com/paulo-gouvea.png' }} />
+            <Image source={{ uri: data.image }} />
 
-            <Name>4 Queijos</Name>
+            <Name>{data.pizza}</Name>
 
             <Description>
-                Mesa 5 ⦁ Qnt: 1 
+                Mesa {data.table_number} ⦁ Qnt: {data.quantity} 
             </Description>
 
             <StatusContainer 
-                status="Preparando"
+                status={data.status}
             >
                 <StatusLabel
-                    status="Preparando"
+                    status={data.status}
                 >
-                    Preparando
+                    {data.status}
                 </StatusLabel>
             </StatusContainer>
         </Container>

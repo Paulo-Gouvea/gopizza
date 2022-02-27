@@ -1,5 +1,11 @@
-import React from "react";
-import { FlatList } from "react-native";
+import React, { 
+    useState,
+    useEffect
+} from "react";
+import { FlatList, Alert } from "react-native";
+import firestore from '@react-native-firebase/firestore'
+
+import { useAuth } from "../../hooks/auth";
 
 import {
     Container,
@@ -7,10 +13,53 @@ import {
     Title,
 } from './styles';
 
-import { OrderCard } from "../../components/OrderCard";
+import { OrderCard, OrderProps } from "../../components/OrderCard";
 import { ItemSeparator } from "../../components/ItemSeparator";
 
 export function Orders(){
+    const [orders, setOrders] = useState<OrderProps[]>([]);
+
+    const { user } = useAuth();
+
+    function handlePizzaDelivered(id: string){
+        Alert.alert('Pedido', 'Confirmar que a pizza foi entregue na mesa?', [
+            {
+                text: 'Não',
+                style: 'cancel'
+            },
+            {
+                text: 'Sim',
+                onPress: () => {
+                    firestore()
+                    .collection('orders')
+                    .doc(id)
+                    .update({
+                        status: 'Entregue'
+                    });
+                }
+            }
+        ]);
+    }
+
+    useEffect(()=> {
+        const subscribe = firestore()
+        .collection('orders')
+        .where('waiter_id', '==', user?.id)
+        .onSnapshot(querySnapshot => {
+            const data = querySnapshot.docs.map(doc => {
+                return {
+                    id: doc.id,
+                    ...doc.data()
+                }
+            }) as OrderProps[];
+
+            setOrders(data);
+        });
+
+        return () => subscribe();
+
+    });
+
     return (
         <Container>
             <Header>
@@ -18,11 +67,14 @@ export function Orders(){
             </Header>
 
             <FlatList 
-                data={['1', '2', '3']}
-                keyExtractor={(item) => item}
+                data={orders}
+                keyExtractor={(item) => item.id}
                 renderItem={({ item, index }) => (
                     <OrderCard 
                         index={index}
+                        data={item}
+                        disabled={item.status === 'Entregue'}
+                        onPress={() => handlePizzaDelivered(item.id)}
                     />
                 )}
                 numColumns={2}
